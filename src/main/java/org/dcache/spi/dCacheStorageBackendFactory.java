@@ -9,5 +9,28 @@
 
 package org.dcache.spi;
 
-public class dCacheStorageBackendFactory {
+import org.indigo.cdmi.spi.StorageBackend;
+import org.indigo.cdmi.spi.StorageBackendFactory;
+
+import java.util.Map;
+
+public class dCacheStorageBackendFactory implements StorageBackendFactory {
+
+    private final String type = "dCache";
+    private final String description = "CDMI Spi plugin for dCache Storage System";
+
+    @Override
+    public StorageBackend createStorageBackend(Map<String, String> map) throws IllegalArgumentException {
+        return new dCacheStorageBackend();
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public String getType() {
+        return this.type;
+    }
 }
