@@ -49,7 +49,6 @@ public class ParseUtils
 
         String cdmiRedundancy = meta.getString("cdmi_data_redundancy_provided");
 
-        //List<String> cdmiGeoP = Arrays.asList(meta.getString("cdmi_geographic_placement_provided"));
         List<String> cdmiGeoP = JsonUtils.jsonArrayToStringList(
                                             meta.getJSONArray("cdmi_geographic_placement_provided"));
 
@@ -88,7 +87,6 @@ public class ParseUtils
     private static String listToGeoString (List<String> cdmiGeoPlacement)
     {
         String result = cdmiGeoPlacement.stream().map((g) -> "\"" + g + "\"").collect(Collectors.joining(", "));
-        System.out.println("cdmiGeo = " + result);
         return "[ " + result + "]";
     }
 

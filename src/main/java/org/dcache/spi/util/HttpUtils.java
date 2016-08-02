@@ -1,12 +1,17 @@
 package org.dcache.spi.util;
 
+import com.google.common.base.Charsets;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
 import org.indigo.cdmi.BackendCapability;
 import org.indigo.cdmi.BackendCapability.CapabilityType;
@@ -29,9 +34,8 @@ public class HttpUtils
     private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
 
     private static final HttpClient client = HttpClientBuilder.create().build();
-    //private static final Header authHeader = new BasicHeader("Authorization", "Basic YWRtaW46ZGlja2VyZWxjaA==");
-    //private static final Header authHeader = new BasicHeader("Authorization", "Basic YW51cGFtOm1hamVzdGlj"); // prometheus
-    private static final Header authHeader = new BasicHeader("Authorization", "Basic YWRtaW46ZGlja2VyZWxjaA=="); // dcache-qos-01 admi
+    private static BasicScheme scheme = new BasicScheme(Charsets.UTF_8);
+    private static UsernamePasswordCredentials clientCreds;
 
     public static List<BackendCapability> getBackendCapabilities(String url) throws SpiException
     {
@@ -83,7 +87,7 @@ public class HttpUtils
 
     public static JSONObject execute(HttpUriRequest request) throws SpiException {
         try {
-            request.addHeader(authHeader);
+            request.addHeader(scheme.authenticate(clientCreds, request, new BasicHttpContext()) );
             HttpResponse httpResponse = client.execute(request);
 
             if (statusOk(httpResponse)) {
@@ -92,7 +96,7 @@ public class HttpUtils
                 LOG.warn("{}  {}: {} ", request.getMethod(), request.getURI(), httpResponseToString(httpResponse));
                 checkStatusError(httpResponse);
             }
-        } catch (IOException | JSONException ie ) {
+        } catch (IOException | JSONException | AuthenticationException ie ) {
             throw new SpiException(request.getURI(), request.getMethod(), ie.getMessage());
         }
         return null;
@@ -144,5 +148,9 @@ public class HttpUtils
         default:
             return null;
         }
+    }
+
+    public static void setCredentials(String username, String password) {
+        clientCreds = new UsernamePasswordCredentials(username, password);
     }
 }
