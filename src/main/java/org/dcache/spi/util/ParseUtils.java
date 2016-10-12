@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
 import org.indigo.cdmi.BackendCapability;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -45,7 +46,6 @@ public class ParseUtils
 
         String name = backendCap.getString("name");
         JSONObject meta = backendCap.getJSONObject("metadata");
-        List<String> transition = JsonUtils.jsonArrayToStringList(backendCap.getJSONArray("transition"));
 
         String cdmiRedundancy = meta.getString("cdmi_data_redundancy_provided");
 
@@ -59,7 +59,11 @@ public class ParseUtils
         metadata.put("cdmi_latency", cdmiLatency);
 
         capabilities.putAll(dCacheStorageBackend.capabilities);
-        capabilities.put("cdmi_capabilities_allowed", capabiliesAllowed(transition, type));
+        try {
+            List<String> transition = JsonUtils.jsonArrayToStringList(backendCap.getJSONArray("transition"));
+            capabilities.put("cdmi_capabilities_allowed", capabiliesAllowed(transition, type));
+        } catch (JSONException je) {
+        }
 
         BackendCapability capability = new BackendCapability(name, type);
         capability.setMetadata(metadata);
