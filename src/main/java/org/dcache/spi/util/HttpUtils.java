@@ -114,7 +114,7 @@ public class HttpUtils
         JSONObject response = execute(request);
 
         try {
-            List<String> capabilities = JsonUtils.jsonArrayToStringList(response.getJSONArray("name"));
+            List<String> capabilities = JsonUtils.jsonArrayToStringList(response.getJSONArray("name").getJSONArray(0));
             for (String capability: capabilities) {
                 request = new HttpGet(url + backendCapTypeTofileType(type) + "/" + capability);
                 response = execute(request);
