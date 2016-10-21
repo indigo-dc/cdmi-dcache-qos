@@ -1,9 +1,13 @@
-# CDMI QoS plugin for dCache Storage Backend
+CDMI QoS plugin for dCache Storage Backend
+======================================
 
-Properties:
+Properties
+---------------------
 
-dcache.server= <dcache server>
-dcache.server.rest.endpoint= <port number on which the rest endpoint is running>
+`dcache.server` = dcache server
 
-dcache.rest.user=<username for authentication>
-dcache.rest.password=<password for authentication>
+`dcache.server.rest.endpoint` = port number on which the rest endpoint is running
+
+`dcache.rest.user` = username for authentication
+
+`dcache.rest.password` = password for authentication
