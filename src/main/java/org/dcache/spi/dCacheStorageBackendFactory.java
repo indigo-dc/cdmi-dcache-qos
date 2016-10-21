@@ -9,6 +9,7 @@
 
 package org.dcache.spi;
 
+import org.indigo.cdmi.SubjectBasedStorageBackend;
 import org.indigo.cdmi.spi.StorageBackend;
 import org.indigo.cdmi.spi.StorageBackendFactory;
 
@@ -21,7 +22,7 @@ public class dCacheStorageBackendFactory implements StorageBackendFactory {
 
     @Override
     public StorageBackend createStorageBackend(Map<String, String> map) throws IllegalArgumentException {
-        return new dCacheStorageBackend();
+        return new SubjectBasedStorageBackend(new dCacheStorageBackend());
     }
 
     @Override
