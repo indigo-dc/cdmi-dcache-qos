@@ -119,9 +119,9 @@ public class dCacheStorageBackend implements StorageBackend
             LOG.debug("Cdmi object {} if of type: {}", path, rest.getString("fileType"));
 
             String targetCapUri = null;
-            if (cdmi.has("update")) {
+            if (cdmi.has("targetQoS")) {
                 targetCapUri = "/cdmi_capabilities/" + ParseUtils.fileTypeToCapType(rest.getString("fileType")) + "/"
-                                + cdmi.getString("update");
+                                + cdmi.getString("targetQoS");
             }
             LOG.info("Cdmi Capability of object {} is {}; in transition to {}", path, currentCapUri, targetCapUri);
             return new CdmiObjectStatus(monAttributes, currentCapUri, targetCapUri);
