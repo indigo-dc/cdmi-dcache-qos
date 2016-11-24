@@ -45,10 +45,11 @@ public class dCacheStorageBackend implements StorageBackend
     public static HashMap<String, String> capabilities = new HashMap<>();
 
     static {
-        capabilities.put("cdmi_capabilities_templates", "true");
-        capabilities.put("cdmi_capabilities_exact_inherit", "true");
+        //capabilities.put("cdmi_capabilities_templates", "true");
+        //capabilities.put("cdmi_capabilities_exact_inherit", "true");
         capabilities.put("cdmi_data_redundancy", "true");
         capabilities.put("cdmi_geographic_placement", "true");
+        capabilities.put("cdmi_capabilities_allowed", "true");
         capabilities.put("cdmi_latency", "true");
     }
 

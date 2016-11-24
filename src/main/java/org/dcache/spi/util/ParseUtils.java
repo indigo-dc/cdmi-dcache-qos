@@ -57,13 +57,13 @@ public class ParseUtils
         metadata.put("cdmi_data_redundancy", cdmiRedundancy);
         metadata.put("cdmi_geographic_placement", listToGeoString(cdmiGeoP));
         metadata.put("cdmi_latency", cdmiLatency);
-
-        capabilities.putAll(dCacheStorageBackend.capabilities);
         try {
             List<String> transition = JsonUtils.jsonArrayToStringList(backendCap.getJSONArray("transition"));
-            capabilities.put("cdmi_capabilities_allowed", capabiliesAllowed(transition, type));
+            metadata.put("cdmi_capabilities_allowed", capabiliesAllowed(transition, type));
         } catch (JSONException je) {
         }
+
+        capabilities.putAll(dCacheStorageBackend.capabilities);
 
         BackendCapability capability = new BackendCapability(name, type);
         capability.setMetadata(metadata);
