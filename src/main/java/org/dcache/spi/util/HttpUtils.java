@@ -53,7 +53,7 @@ public class HttpUtils
         return HttpUtils.execute(request);
     }
 
-    public static Map<String, String> monitoredAttributes(String capabilityUri)
+    public static Map<String, Object> monitoredAttributes(String capabilityUri)
             throws SpiException {
         HttpGet dirRequest = new HttpGet(capabilityUri);
         return ParseUtils.metadataFromJson(HttpUtils.execute(dirRequest));

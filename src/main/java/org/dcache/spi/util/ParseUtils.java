@@ -40,8 +40,7 @@ public class ParseUtils
 
     public static BackendCapability backendCapabilityFromJson(JSONObject obj, CapabilityType type)
     {
-        Map<String, String> metadata = new HashMap<>();
-        Map<String, String> capabilities = new HashMap<>();
+        Map<String, Object> metadata = new HashMap<>();
         JSONObject backendCap = (JSONObject) obj.get("backendCapability");
 
         String name = backendCap.getString("name");
@@ -54,25 +53,23 @@ public class ParseUtils
 
         String cdmiLatency = meta.getString("cdmi_latency_provided");
 
-        metadata.put("cdmi_data_redundancy", cdmiRedundancy);
+        metadata.put("cdmi_data_redundancy", Integer.parseInt(cdmiRedundancy));
         metadata.put("cdmi_geographic_placement", listToGeoString(cdmiGeoP));
-        metadata.put("cdmi_latency", cdmiLatency);
+        metadata.put("cdmi_latency", Long.parseLong(cdmiLatency));
         try {
             List<String> transition = JsonUtils.jsonArrayToStringList(backendCap.getJSONArray("transition"));
             metadata.put("cdmi_capabilities_allowed", capabiliesAllowed(transition, type));
         } catch (JSONException je) {
         }
 
-        capabilities.putAll(dCacheStorageBackend.capabilities);
-
         BackendCapability capability = new BackendCapability(name, type);
         capability.setMetadata(metadata);
-        capability.setCapabilities(capabilities);
+        capability.setCapabilities(dCacheStorageBackend.capabilities);
         return capability;
     }
 
-    public static Map<String, String> metadataFromJson (JSONObject obj) {
-        Map<String, String> metadata = new HashMap<>();
+    public static Map<String, Object> metadataFromJson (JSONObject obj) {
+        Map<String, Object> metadata = new HashMap<>();
         JSONObject backendCap = (JSONObject) obj.get("backendCapability");
 
         JSONObject meta = backendCap.getJSONObject("metadata");
@@ -82,9 +79,9 @@ public class ParseUtils
                                         meta.getJSONArray("cdmi_geographic_placement_provided"));
         String cdmiLatencyP = meta.getString("cdmi_latency_provided");
 
-        metadata.put("cdmi_data_redundancy_provided", cdmiRedundancyP);
+        metadata.put("cdmi_data_redundancy_provided", Integer.parseInt(cdmiRedundancyP));
         metadata.put("cdmi_geographic_placement_provided", listToGeoString(cdmiGeoPP));
-        metadata.put("cdmi_latency_provided", cdmiLatencyP);
+        metadata.put("cdmi_latency_provided", Long.parseLong(cdmiLatencyP));
         return metadata;
     }
 

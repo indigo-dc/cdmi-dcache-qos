@@ -42,15 +42,15 @@ public class dCacheStorageBackend implements StorageBackend
     public static final String apiPrefix = "api/v1/";
     public static final String qosPrefix = "qos-management/qos/";
     private String DCACHE_SERVER ;
-    public static HashMap<String, String> capabilities = new HashMap<>();
+    public static final HashMap<String, Object> capabilities = new HashMap<>();
 
     static {
         //capabilities.put("cdmi_capabilities_templates", "true");
         //capabilities.put("cdmi_capabilities_exact_inherit", "true");
-        capabilities.put("cdmi_data_redundancy", "true");
-        capabilities.put("cdmi_geographic_placement", "true");
-        capabilities.put("cdmi_capabilities_allowed", "true");
-        capabilities.put("cdmi_latency", "true");
+        capabilities.put("cdmi_data_redundancy", Boolean.TRUE);
+        capabilities.put("cdmi_geographic_placement", Boolean.TRUE);
+        capabilities.put("cdmi_capabilities_allowed", Boolean.TRUE);
+        capabilities.put("cdmi_latency", Boolean.TRUE);
     }
 
     public dCacheStorageBackend() {
@@ -111,7 +111,7 @@ public class dCacheStorageBackend implements StorageBackend
             String currentCapUrl = HttpUtils.getCapabilityUri(DCACHE_SERVER + apiPrefix + qosPrefix,
                                             rest.getString("fileType"),
                                             curQos);
-            Map<String, String> monAttributes = HttpUtils.monitoredAttributes(currentCapUrl);
+            Map<String, Object> monAttributes = HttpUtils.monitoredAttributes(currentCapUrl);
 
             String currentCapUri = "/cdmi_capabilities/" +
                                     ParseUtils.fileTypeToCapType(rest.getString("fileType")) +
