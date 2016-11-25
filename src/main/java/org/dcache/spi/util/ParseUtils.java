@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
 import org.indigo.cdmi.BackendCapability;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,13 +49,12 @@ public class ParseUtils
 
         String cdmiRedundancy = meta.getString("cdmi_data_redundancy_provided");
 
-        List<String> cdmiGeoP = JsonUtils.jsonArrayToStringList(
-                                            meta.getJSONArray("cdmi_geographic_placement_provided"));
+        JSONArray cdmiGeoP = meta.getJSONArray("cdmi_geographic_placement_provided");
 
         String cdmiLatency = meta.getString("cdmi_latency_provided");
 
         metadata.put("cdmi_data_redundancy", Integer.parseInt(cdmiRedundancy));
-        metadata.put("cdmi_geographic_placement", listToGeoString(cdmiGeoP));
+        metadata.put("cdmi_geographic_placement", cdmiGeoP);
         metadata.put("cdmi_latency", Long.parseLong(cdmiLatency));
         try {
             List<String> transition = JsonUtils.jsonArrayToStringList(backendCap.getJSONArray("transition"));
@@ -91,13 +91,13 @@ public class ParseUtils
         return "[ " + result + "]";
     }
 
-    private static String capabiliesAllowed (List<String> allowed, CapabilityType type)
+    private static JSONArray capabiliesAllowed (List<String> allowed, CapabilityType type)
     {
-        List<String> listCapAllowed = new ArrayList<>(allowed.size());
+        JSONArray capAllowed = new JSONArray();
         for (String s: allowed) {
-            listCapAllowed.add("/cdmi_capabilities/" + backendCapTypeToString(type) + "/" + s + "/");
+            capAllowed.put("/cdmi_capabilities/" + backendCapTypeToString(type) + "/" + s + "/");
         }
-        return Joiner.on(' ').skipNulls().join(listCapAllowed);
+        return capAllowed;
     }
 
     public static String backendCapTypeToString(CapabilityType type) {
