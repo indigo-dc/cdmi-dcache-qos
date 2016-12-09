@@ -75,12 +75,12 @@ public class ParseUtils
         JSONObject meta = backendCap.getJSONObject("metadata");
 
         String cdmiRedundancyP = meta.getString("cdmi_data_redundancy_provided");
-        List<String> cdmiGeoPP = JsonUtils.jsonArrayToStringList(
-                                        meta.getJSONArray("cdmi_geographic_placement_provided"));
+        JSONArray cdmiGeoP = meta.getJSONArray("cdmi_geographic_placement_provided");
+
         String cdmiLatencyP = meta.getString("cdmi_latency_provided");
 
         metadata.put("cdmi_data_redundancy_provided", Integer.parseInt(cdmiRedundancyP));
-        metadata.put("cdmi_geographic_placement_provided", listToGeoString(cdmiGeoPP));
+        metadata.put("cdmi_geographic_placement_provided", cdmiGeoP);
         metadata.put("cdmi_latency_provided", Long.parseLong(cdmiLatencyP));
         return metadata;
     }
