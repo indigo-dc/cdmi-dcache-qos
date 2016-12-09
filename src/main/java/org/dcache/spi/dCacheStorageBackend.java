@@ -47,10 +47,10 @@ public class dCacheStorageBackend implements StorageBackend
     static {
         //capabilities.put("cdmi_capabilities_templates", "true");
         //capabilities.put("cdmi_capabilities_exact_inherit", "true");
-        capabilities.put("cdmi_data_redundancy", Boolean.TRUE);
-        capabilities.put("cdmi_geographic_placement", Boolean.TRUE);
-        capabilities.put("cdmi_capabilities_allowed", Boolean.TRUE);
-        capabilities.put("cdmi_latency", Boolean.TRUE);
+        capabilities.put("cdmi_data_redundancy", "true");
+        capabilities.put("cdmi_geographic_placement", "true");
+        capabilities.put("cdmi_capabilities_allowed", "true");
+        capabilities.put("cdmi_latency", "true");
     }
 
     public dCacheStorageBackend() {
