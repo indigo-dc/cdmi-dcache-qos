@@ -51,8 +51,11 @@ Properties
 The plugin looks for a certain properties with the following information,
 
 `dcache.server` = dcache server
+
 `dcache.server.rest.endpoint` = port number on which the rest endpoint is running
+
 `dcache.rest.user` = username for authentication
+
 `dcache.rest.password` = password for authentication
 
 The configuration for the plugin can be done either via command line parameters or in the **config/dcache.properties** file or any other supported way, see Spring Boot.
@@ -62,7 +65,9 @@ Test
 ---------------------
 
 * Query for a certain CDMI Capability 
+
 ```http GET https://dcache-qos-01.desy.de:8443/cdmi_capabilities/container/disk Authorization:"Bearer $OIDC" X-CDMI-Specification-Version:"1.1" Accept:"application/cdmi-capability" ```
 
 * Change capability of a file
+
 ```http POST https://dcache-qos-01.desy.de:3443/api/v1/qos-management/namespace/random.img Authorization:"Bearer $OIDC" Content-Type:"application/json" Accept:"application/json" "update"="disk+tape" --print=HhBb```
