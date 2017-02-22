@@ -42,7 +42,7 @@ The compilation process produces **cdmi-dcache-qos-\<VERSION\>.jar** artifact. T
     <dependency>
         <groupId>org.dcache.spi</groupId>
         <artifactId>cdmi-dcache-qos</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </dependency>
 ```
 
