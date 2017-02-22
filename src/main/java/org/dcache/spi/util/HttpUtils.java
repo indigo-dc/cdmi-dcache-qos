@@ -67,7 +67,7 @@ public class HttpUtils
 
     public static boolean statusOk(HttpResponse response)
     {
-        return (response.getStatusLine().getStatusCode() == 200);
+        return (response.getStatusLine().getStatusCode() >= 200 && response.getStatusLine().getStatusCode() < 227);
     }
 
     public static void checkStatusError(HttpResponse response) throws SpiException, IOException
@@ -108,7 +108,8 @@ public class HttpUtils
             if (statusOk(httpResponse)) {
                 return ParseUtils.responseAsJson(httpResponse.getEntity());
             } else {
-                LOG.warn("{}  {}: {} ", request.getMethod(), request.getURI(), httpResponseToString(httpResponse));
+                LOG.warn("{} {} {}: {} ", request.getMethod(), request.getURI(), httpResponse.getStatusLine().getStatusCode(),
+                        httpResponseToString(httpResponse));
                 checkStatusError(httpResponse);
             }
         } catch (IOException | JSONException | AuthenticationException ie ) {
