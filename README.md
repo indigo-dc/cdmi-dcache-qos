@@ -50,6 +50,8 @@ Properties
 ---------------------
 The plugin looks for a certain properties with the following information,
 
+`dcache.server.rest.scheme` = http or https
+
 `dcache.server` = dcache server
 
 `dcache.server.rest.endpoint` = port number on which the rest endpoint is running
@@ -57,6 +59,8 @@ The plugin looks for a certain properties with the following information,
 `dcache.rest.user` = username for authentication
 
 `dcache.rest.password` = password for authentication
+
+`cdmi.dcache.rest.version` = (new|old) new rest api in the namespce or old legacy api for QoS operations
 
 The configuration for the plugin can be done either via command line parameters or in the **config/dcache.properties** file or any other supported way, see Spring Boot.
 
@@ -66,8 +70,16 @@ Test
 
 * Query for a certain CDMI Capability 
 
-```http GET https://dcache-qos-01.desy.de:8443/cdmi_capabilities/container/disk Authorization:"Bearer $OIDC" X-CDMI-Specification-Version:"1.1" Accept:"application/cdmi-capability" ```
+```http GET https://dcache-qos-01.desy.de:8443/cdmi_capabilities/container/disk Authorization:"Bearer $OIDC" X-CDMI-Specification-Version:"1.1" Accept:"application/cdmi-capability"```
 
-* Change capability of a file
+* Get CDMI Capability of a file.
+
+```http GET 'https://dcache-qos-01.desy.de:8443/<file-path>?capabilitiesURI;metadata' X-CDMI-Specification-Version:1.1 Authorization:'Bearer $OIDC' Accept:application/cdmi-object --print=HhBb```
+
+* Change CDMI capability of a file.
+
+```http PUT https://dcache-qos-01.desy.de:8443/<file-path> Authorization:"Bearer $OIDC" X-CDMI-Specification-Version:1.1 Content-Type:application/cdmi-object capabilitiesURI=/cdmi_capabilities/dataobject/<capability-type> --print=HhBb```
+
+* Change capability of a file using the legacy REST API for dCache
 
 ```http POST https://dcache-qos-01.desy.de:3443/api/v1/qos-management/namespace/random.img Authorization:"Bearer $OIDC" Content-Type:"application/json" Accept:"application/json" "update"="disk+tape" --print=HhBb```

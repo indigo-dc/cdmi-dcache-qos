@@ -34,14 +34,21 @@ import org.dcache.spi.util.JsonUtils;
 import org.dcache.spi.util.ParseUtils;
 import org.dcache.spi.util.PluginConfig;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class dCacheStorageBackend implements StorageBackend
 {
     private static final Logger LOG = LoggerFactory.getLogger(dCacheStorageBackend.class);
     private PluginConfig config;
 
     public static final String apiPrefix = "api/v1/";
-    public static final String qosPrefix = "qos-management/qos/";
+    public static final String qosPrefixOld = "qos-management/qos/";
+    public static final String qosPrefixNew = "namespace";
+
+    private static String qosPrefix;
+    private static boolean isRestApiNew;
     private String DCACHE_SERVER ;
+    private static String scheme;
     public static final HashMap<String, Object> capabilities = new HashMap<>();
 
     static {
@@ -53,16 +60,29 @@ public class dCacheStorageBackend implements StorageBackend
         capabilities.put("cdmi_latency", "true");
     }
 
-    public dCacheStorageBackend() {
+    public dCacheStorageBackend()
+    {
         config = new PluginConfig();
-        DCACHE_SERVER = "http://" + config.get("dcache.server") + ":" + config.get("dcache.server.rest.endpoint") + "/";
+        checkNotNull(config.get("cdmi.dcache.rest.version"));
+        checkNotNull(config.get("dcache.server.rest.scheme"));
+
+        isRestApiNew = config.get("cdmi.dcache.rest.version").equals("new") ? true : false;
+        scheme = config.get("dcache.server.rest.scheme") + "://";
+
+        if (isRestApiNew) {
+            qosPrefix = qosPrefixNew;
+        } else {
+            qosPrefix = qosPrefixOld;
+        }
+
+        DCACHE_SERVER = scheme + config.get("dcache.server") + ":" + config.get("dcache.server.rest.endpoint") + "/";
         HttpUtils.setCredentials(config.get("dcache.rest.user"), config.get("dcache.rest.password"));
     }
 
     @Override
     public List<BackendCapability> getCapabilities() throws BackEndException
     {
-        String url = DCACHE_SERVER + apiPrefix + qosPrefix;
+        String url = DCACHE_SERVER + apiPrefix + qosPrefixOld;
         try {
             LOG.debug("Fetching Cdmi Capabilities from {}", url);
             return HttpUtils.getBackendCapabilities(url);
@@ -76,15 +96,20 @@ public class dCacheStorageBackend implements StorageBackend
     public void updateCdmiObject(String path, String targetCapabilityUri)
             throws BackEndException
     {
-        String url = DCACHE_SERVER + apiPrefix + "qos-management/" + "namespace"  + path;
-        try {
+        LOG.debug("QoS Update of {} to target capability {}", path, targetCapabilityUri);
+        String url = DCACHE_SERVER + apiPrefix + (isRestApiNew ? qosPrefixNew : "qos-management/" + "namespace") + path;
+        try
+        {
             HttpPost post = new HttpPost(url);
-            post.setEntity(new StringEntity(JsonUtils.targetCapUriToJson(targetCapabilityUri)));
+            post.setEntity(new StringEntity(isRestApiNew ? JsonUtils.targetCapUriToJsonNew(targetCapabilityUri):
+                                                          JsonUtils.targetCapUriToJsonOld(targetCapabilityUri)));
             List<Header> headers = new ArrayList<>();
             headers.add(new BasicHeader("Content-Type", "application/json"));
             headers.add(new BasicHeader("Accept", "application/json"));
             JSONObject response = HttpUtils.execute(post, headers);
-            LOG.info("QoS Update of {} to {}: {}", path, targetCapabilityUri, response.getString("message"));
+            LOG.info("QoS Update of {} to {}: {}", path,
+                                                   targetCapabilityUri,
+                                                   response.getString(isRestApiNew ? "status": "message"));
         } catch (SpiException se) {
             LOG.error("Error Updating Capability of {} to {}: {}", path, targetCapabilityUri, se.getMessage());
             throw new BackEndException(se.getMessage(), se.getCause());
@@ -96,23 +121,26 @@ public class dCacheStorageBackend implements StorageBackend
     }
 
     @Override
-    public CdmiObjectStatus getCurrentStatus(String path) throws BackEndException {
+    public CdmiObjectStatus getCurrentStatus(String path) throws BackEndException
+    {
         LOG.debug("Get Current Cdmi Capability of {}", path);
 
-        String cdmiUrl = DCACHE_SERVER + apiPrefix + "qos-management/" + "namespace" + path;
+        String cdmiUrl = DCACHE_SERVER + apiPrefix +
+                                         (isRestApiNew ? qosPrefixNew : "qos-management/" + "namespace") + path +
+                                         (isRestApiNew ? "/?qos=true" : "");
         String restUrl = DCACHE_SERVER + apiPrefix + "namespace" + path;
-        try {
+        try
+        {
             JSONObject cdmi = HttpUtils.currentStatus(cdmiUrl);
             JSONObject rest = HttpUtils.currentStatus(restUrl);
 
-            String status = cdmi.getString("status"); // Use it to set Status
-            String curQos = cdmi.getString("qos");
+            String curQos = cdmi.getString((isRestApiNew) ? "currentQos" : "qos");
 
-            String currentCapUrl = HttpUtils.getCapabilityUri(DCACHE_SERVER + apiPrefix + qosPrefix,
-                                            rest.getString("fileType"),
-                                            curQos);
+            String currentCapUrl = HttpUtils.getCapabilityUri(DCACHE_SERVER + apiPrefix + qosPrefixOld,
+                                                               rest.getString("fileType"),
+                                                               curQos);
+
             Map<String, Object> monAttributes = HttpUtils.monitoredAttributes(currentCapUrl);
-
             String currentCapUri = "/cdmi_capabilities/" +
                                     ParseUtils.fileTypeToCapType(rest.getString("fileType")) +
                                     "/" + curQos;
@@ -132,3 +160,5 @@ public class dCacheStorageBackend implements StorageBackend
         }
     }
 }
+
+

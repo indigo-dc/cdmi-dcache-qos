@@ -18,10 +18,18 @@ public class JsonUtils
         return list;
     }
 
-    public static String targetCapUriToJson (String targetCapability) {
+    public static String targetCapUriToJsonOld(String targetCapability) {
         String[] parts = targetCapability.trim().split("/");
         JSONObject json = new JSONObject();
         json.put("update", parts[parts.length - 1]);
+        return json.toString();
+    }
+
+    public static String targetCapUriToJsonNew(String targetCapability) {
+        String[] parts = targetCapability.trim().split("/");
+        JSONObject json = new JSONObject();
+        json.put("action", "qos");
+        json.put("target", parts[parts.length - 1]);
         return json.toString();
     }
 }
