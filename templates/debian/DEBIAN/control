@@ -1,0 +1,13 @@
+Package: cdmi-dcache-qos
+Version: @SERVICE_VERSION@
+Section: web
+Priority: optional
+Architecture: all
+Maintainer: INDIGO DataCloud
+Depends: java8-runtime, redis-server
+Description: CDMI Spi plugin for dCache Storage System.
+ .
+ Standalone Spring Boot application version.
+ .
+
+ 
