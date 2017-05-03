@@ -50,6 +50,7 @@ public class dCacheStorageBackend implements StorageBackend
     private String DCACHE_SERVER ;
     private static String scheme;
     public static final HashMap<String, Object> capabilities = new HashMap<>();
+    public static final HashMap<String, Object> exports = new HashMap<>();
 
     static {
         //capabilities.put("cdmi_capabilities_templates", "true");
@@ -58,6 +59,8 @@ public class dCacheStorageBackend implements StorageBackend
         capabilities.put("cdmi_geographic_placement", "true");
         capabilities.put("cdmi_capabilities_allowed", "true");
         capabilities.put("cdmi_latency", "true");
+        exports.put("Network/WebHTTP", new JSONObject().put("identifier", "https://dcache-qos-01.desy.de/")
+                                                       .put("permissions", "oidc"));
     }
 
     public dCacheStorageBackend()
@@ -129,10 +132,13 @@ public class dCacheStorageBackend implements StorageBackend
                                          (isRestApiNew ? qosPrefixNew : "qos-management/" + "namespace") + path +
                                          (isRestApiNew ? "/?qos=true" : "");
         String restUrl = DCACHE_SERVER + apiPrefix + "namespace" + path;
+        String childUrl = DCACHE_SERVER + apiPrefix + "namespace" + path + "/?children=true";
+
         try
         {
             JSONObject cdmi = HttpUtils.currentStatus(cdmiUrl);
             JSONObject rest = HttpUtils.currentStatus(restUrl);
+            JSONObject childrenJson = HttpUtils.currentStatus(childUrl);
 
             String curQos = cdmi.getString((isRestApiNew) ? "currentQos" : "qos");
 
@@ -141,6 +147,10 @@ public class dCacheStorageBackend implements StorageBackend
                                                                curQos);
 
             Map<String, Object> monAttributes = HttpUtils.monitoredAttributes(currentCapUrl);
+            LOG.debug("Children {}  of Cdmi object {}", childrenJson, path);
+
+            List<String> children = ParseUtils.extractChildren(childrenJson);
+
             String currentCapUri = "/cdmi_capabilities/" +
                                     ParseUtils.fileTypeToCapType(rest.getString("fileType")) +
                                     "/" + curQos;
@@ -153,7 +163,11 @@ public class dCacheStorageBackend implements StorageBackend
                                 + cdmi.getString("targetQoS");
             }
             LOG.info("Cdmi Capability of object {} is {}; in transition to {}", path, currentCapUri, targetCapUri);
-            return new CdmiObjectStatus(monAttributes, currentCapUri, targetCapUri);
+
+            CdmiObjectStatus  status = new CdmiObjectStatus(monAttributes, currentCapUri, targetCapUri);
+            status.setExportAttributes(exports);
+            status.setChildren(children);
+            return status;
         } catch(SpiException | JSONException se) {
             LOG.error(se.getMessage());
             throw new BackEndException(se.getMessage());

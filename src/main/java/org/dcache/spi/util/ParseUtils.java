@@ -1,16 +1,18 @@
 package org.dcache.spi.util;
 
-import com.google.common.base.Joiner;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
 import org.indigo.cdmi.BackendCapability;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,8 @@ import static org.indigo.cdmi.BackendCapability.CapabilityType;
 
 public class ParseUtils
 {
+    private static final Logger LOG = LoggerFactory.getLogger(ParseUtils.class);
+
     public static JSONObject responseAsJson(HttpEntity response) throws IOException
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -83,6 +87,25 @@ public class ParseUtils
         metadata.put("cdmi_geographic_placement_provided", cdmiGeoP);
         metadata.put("cdmi_latency_provided", Long.parseLong(cdmiLatencyP));
         return metadata;
+    }
+
+    public static List<String> extractChildren(JSONObject json) {
+        try {
+            JSONArray _children = json.getJSONArray("children");
+            List<String> children = new ArrayList<>(_children.length());
+            if (_children.length() > 0) {
+                LOG.debug("Children -> ");
+                for (int i = 0; i < _children.length(); i++) {
+                    JSONObject child = (JSONObject) _children.get(i);
+                    LOG.debug("\tFound Children {}", child.get("fileName"));
+                    children.add(((JSONObject) _children.get(i)).getString("fileName"));
+                }
+            }
+            return children;
+        } catch (JSONException e) {
+            LOG.debug("could not put childrenIntoMonitor {}", json);
+            return Collections.emptyList();
+        }
     }
 
     private static String listToGeoString (List<String> cdmiGeoPlacement)
