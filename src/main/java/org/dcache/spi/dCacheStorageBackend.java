@@ -9,6 +9,7 @@
 
 package org.dcache.spi;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -68,6 +69,8 @@ public class dCacheStorageBackend implements StorageBackend
         config = new PluginConfig();
         checkNotNull(config.get("cdmi.dcache.rest.version"));
         checkNotNull(config.get("dcache.server.rest.scheme"));
+        checkNotNull(config.get("dcache.server"));
+        checkNotNull(config.get("dcache.server.rest.endpoint"));
 
         isRestApiNew = config.get("cdmi.dcache.rest.version").equals("new") ? true : false;
         scheme = config.get("dcache.server.rest.scheme") + "://";
@@ -100,23 +103,32 @@ public class dCacheStorageBackend implements StorageBackend
             throws BackEndException
     {
         LOG.debug("QoS Update of {} to target capability {}", path, targetCapabilityUri);
+
+        JSONObject response = updateCdmiObjectStub(path, targetCapabilityUri);
+
+        LOG.info("QoS Update of {} to {}: {}", path,
+                targetCapabilityUri,
+                response.getString(isRestApiNew ? "status": "message"));
+    }
+
+    @VisibleForTesting
+    JSONObject updateCdmiObjectStub(String path, String targetCapabilityUri)
+            throws BackEndException
+    {
         String url = DCACHE_SERVER + apiPrefix + (isRestApiNew ? qosPrefixNew : "qos-management/" + "namespace") + path;
         try
         {
             HttpPost post = new HttpPost(url);
             post.setEntity(new StringEntity(isRestApiNew ? JsonUtils.targetCapUriToJsonNew(targetCapabilityUri):
-                                                          JsonUtils.targetCapUriToJsonOld(targetCapabilityUri)));
+                                                           JsonUtils.targetCapUriToJsonOld(targetCapabilityUri)));
             List<Header> headers = new ArrayList<>();
             headers.add(new BasicHeader("Content-Type", "application/json"));
             headers.add(new BasicHeader("Accept", "application/json"));
-            JSONObject response = HttpUtils.execute(post, headers);
-            LOG.info("QoS Update of {} to {}: {}", path,
-                                                   targetCapabilityUri,
-                                                   response.getString(isRestApiNew ? "status": "message"));
+            return HttpUtils.execute(post, headers);
         } catch (SpiException se) {
             LOG.error("Error Updating Capability of {} to {}: {}", path, targetCapabilityUri, se.getMessage());
             throw new BackEndException(se.getMessage(), se.getCause());
-        } catch (UnsupportedEncodingException ue) {
+        } catch (UnsupportedEncodingException | IllegalArgumentException ue) {
             LOG.error("Error creating request to update capability of {} to {}: {}",
                     path, targetCapabilityUri, ue.getMessage());
             throw new BackEndException(ue.getMessage(), ue.getCause());
@@ -168,7 +180,7 @@ public class dCacheStorageBackend implements StorageBackend
             status.setExportAttributes(exports);
             status.setChildren(children);
             return status;
-        } catch(SpiException | JSONException se) {
+        } catch(SpiException | JSONException | IllegalArgumentException se) {
             LOG.error(se.getMessage());
             throw new BackEndException(se.getMessage());
         }

@@ -1,5 +1,6 @@
 package org.dcache.spi.util;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -36,7 +37,9 @@ public class HttpUtils
 {
     private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
 
-    private static final HttpClient client = HttpClientBuilder.create().build();
+    @VisibleForTesting
+    static final HttpClient client = HttpClientBuilder.create().build();
+
     private static BasicScheme scheme = new BasicScheme(Charsets.UTF_8);
     private static UsernamePasswordCredentials clientCreds;
 
@@ -81,14 +84,16 @@ public class HttpUtils
         }
     }
 
-    public static JSONObject execute(HttpUriRequest request, List<Header> headers) throws SpiException {
+    public static JSONObject execute(HttpUriRequest request, List<Header> headers) throws SpiException
+    {
         for (Header header: headers) {
             request.addHeader(header);
         }
         return execute(request);
     }
 
-    public static JSONObject execute(HttpUriRequest request) throws SpiException {
+    public static JSONObject execute(HttpUriRequest request) throws SpiException
+    {
         try {
             Subject subject = Subject.getSubject(AccessController.getContext());
             LOG.debug("Subject credentials = {}", subject);
@@ -122,14 +127,15 @@ public class HttpUtils
         return EntityUtils.toString(response.getEntity(), "UTF-8");
     }
 
-    private static void addBackendCapability(String url,
-                                             List<BackendCapability> backendCapabilities,
-                                             CapabilityType type) throws SpiException
+    @VisibleForTesting
+    static void addBackendCapability(String url,
+                                     List<BackendCapability> backendCapabilities,
+                                     CapabilityType type) throws SpiException
     {
-        HttpGet request = new HttpGet(url + backendCapTypeTofileType(type));
-        JSONObject response = execute(request);
-
         try {
+            HttpGet request = new HttpGet(url + backendCapTypeTofileType(type));
+            JSONObject response = execute(request);
+
             List<String> capabilities = JsonUtils.jsonArrayToStringList(response.getJSONArray("name"));
             for (String capability: capabilities) {
                 request = new HttpGet(url + backendCapTypeTofileType(type) + "/" + capability);
@@ -138,10 +144,9 @@ public class HttpUtils
                 BackendCapability backendCapability = ParseUtils.backendCapabilityFromJson(response, type);
                 backendCapabilities.add(backendCapability);
             }
-        } catch (JSONException je) {
+        } catch (JSONException | IllegalArgumentException je) {
             throw new SpiException(je.getMessage());
         }
-
     }
 
     public static String backendCapTypeTofileType(CapabilityType type) {
