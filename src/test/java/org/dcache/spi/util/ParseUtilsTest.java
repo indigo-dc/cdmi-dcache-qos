@@ -16,21 +16,18 @@ import static org.dcache.spi.util.ParseUtils.backendCapabilityFromJson;
 import static org.indigo.cdmi.BackendCapability.CapabilityType.DATAOBJECT;
 import static org.junit.Assert.*;
 
-public class ParseUtilsTest
-{
-    private static String CAP_DISK_TAPE = "{\"backendCapability\":{\"metadata\":{\"cdmi_data_redundancy_provided\":\"2\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"},\"name\":\"disk+tape\",\"transition\":[\"tape\"]}}";
-    private static String CAP_DISK = "{\"backendCapability\":{\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"},\"name\":\"disk\",\"transition\":[\"tape\",\"disk+tape\"]}}";
-
+public class ParseUtilsTest {
     private static final HashMap<String, Object> capabilities = dCacheStorageBackend.capabilities;
     private static final HashMap<String, Object> exports = dCacheStorageBackend.exports;
+    private static String CAP_DISK_TAPE = "{\"backendCapability\":{\"metadata\":{\"cdmi_data_redundancy_provided\":\"2\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"},\"name\":\"disk+tape\",\"transition\":[\"tape\"]}}";
+    private static String CAP_DISK = "{\"backendCapability\":{\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"},\"name\":\"disk\",\"transition\":[\"tape\",\"disk+tape\"]}}";
 
     @Before
     public void setUp() throws Exception {
     }
 
     @Test
-    public void testBackendCapabilityDiskAndTapeFromJson() throws Exception
-    {
+    public void testBackendCapabilityDiskAndTapeFromJson() throws Exception {
         assertThat(CAP_DISK_TAPE, isJson());
 
         JSONObject json = new JSONObject(CAP_DISK_TAPE);
@@ -46,12 +43,12 @@ public class ParseUtilsTest
                                                                                .getInt("cdmi_data_redundancy_provided"));
         assertEquals(capability.getMetadata().get("cdmi_geographic_placement"), json.getJSONObject("backendCapability")
                                                                                     .getJSONObject("metadata")
-                                                                                    .getJSONArray("cdmi_geographic_placement_provided"));
+                                                                                    .getJSONArray(
+                                                                                            "cdmi_geographic_placement_provided"));
     }
 
     @Test
-    public void testBackendCapabilityDiskFromJson() throws Exception
-    {
+    public void testBackendCapabilityDiskFromJson() throws Exception {
         assertThat(CAP_DISK, isJson());
 
         JSONObject json = new JSONObject(CAP_DISK);
@@ -65,13 +62,13 @@ public class ParseUtilsTest
                                                                                .getJSONObject("metadata")
                                                                                .getInt("cdmi_data_redundancy_provided"));
         assertEquals(capability.getMetadata().get("cdmi_geographic_placement"), json.getJSONObject("backendCapability")
-                                                                               .getJSONObject("metadata")
-                                                                               .getJSONArray("cdmi_geographic_placement_provided"));
+                                                                                    .getJSONObject("metadata")
+                                                                                    .getJSONArray(
+                                                                                            "cdmi_geographic_placement_provided"));
     }
 
     @Test
-    public void testMetadataFromJson() throws Exception
-    {
+    public void testMetadataFromJson() throws Exception {
         assertThat(CAP_DISK, isJson());
 
         Map<String, Object> metadata = ParseUtils.metadataFromJson(new JSONObject(CAP_DISK));

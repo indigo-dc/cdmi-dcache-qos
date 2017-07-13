@@ -6,10 +6,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JsonUtils
-{
-    public static List<String> jsonArrayToStringList(JSONArray array)
-    {
+public class JsonUtils {
+    public static List<String> jsonArrayToStringList(JSONArray array) {
         int len = array.length();
         List<String> list = new ArrayList<String>(len);
         for (int i = 0; i < len; i++) {

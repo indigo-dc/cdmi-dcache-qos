@@ -22,29 +22,25 @@ import org.dcache.spi.dCacheStorageBackend;
 
 import static org.indigo.cdmi.BackendCapability.CapabilityType;
 
-public class ParseUtils
-{
+public class ParseUtils {
     private static final Logger LOG = LoggerFactory.getLogger(ParseUtils.class);
 
-    public static JSONObject responseAsJson(HttpEntity response) throws IOException
-    {
+    public static JSONObject responseAsJson(HttpEntity response) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         response.writeTo(os);
-        String responseAsJson =  new String(os.toByteArray(), Charsets.UTF_8);
+        String responseAsJson = new String(os.toByteArray(), Charsets.UTF_8);
         return new JSONObject(responseAsJson);
     }
 
-    public static List<String> jsonListToStringList(List<JSONObject> list)
-    {
+    public static List<String> jsonListToStringList(List<JSONObject> list) {
         List<String> capabilities = new ArrayList<String>(list.size());
-        for (JSONObject obj: list) {
+        for (JSONObject obj : list) {
             capabilities.add(obj.toString());
         }
         return capabilities;
     }
 
-    public static BackendCapability backendCapabilityFromJson(JSONObject obj, CapabilityType type)
-    {
+    public static BackendCapability backendCapabilityFromJson(JSONObject obj, CapabilityType type) {
         Map<String, Object> metadata = new HashMap<>();
         JSONObject backendCap = (JSONObject) obj.get("backendCapability");
 
@@ -72,7 +68,7 @@ public class ParseUtils
         return capability;
     }
 
-    public static Map<String, Object> metadataFromJson (JSONObject obj) {
+    public static Map<String, Object> metadataFromJson(JSONObject obj) {
         Map<String, Object> metadata = new HashMap<>();
         JSONObject backendCap = (JSONObject) obj.get("backendCapability");
 
@@ -108,16 +104,14 @@ public class ParseUtils
         }
     }
 
-    private static String listToGeoString (List<String> cdmiGeoPlacement)
-    {
+    private static String listToGeoString(List<String> cdmiGeoPlacement) {
         String result = cdmiGeoPlacement.stream().map((g) -> "\"" + g + "\"").collect(Collectors.joining(", "));
         return "[ " + result + "]";
     }
 
-    private static JSONArray capabiliesAllowed (List<String> allowed, CapabilityType type)
-    {
+    private static JSONArray capabiliesAllowed(List<String> allowed, CapabilityType type) {
         JSONArray capAllowed = new JSONArray();
-        for (String s: allowed) {
+        for (String s : allowed) {
             capAllowed.put("/cdmi_capabilities/" + backendCapTypeToString(type) + "/" + s + "/");
         }
         return capAllowed;
@@ -134,7 +128,7 @@ public class ParseUtils
         }
     }
 
-    public static String fileTypeToCapType (String type) {
+    public static String fileTypeToCapType(String type) {
         switch (type) {
             case "DIR":
                 return "container";

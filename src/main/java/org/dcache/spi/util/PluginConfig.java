@@ -19,7 +19,7 @@ public class PluginConfig {
 
         // From class Path
         InputStream configInputStream = getClass().getClassLoader().getResourceAsStream(dcacheProperties);
-        if(configInputStream == null) {
+        if (configInputStream == null) {
             throw new RuntimeException("Failed to find config file");
         }
 

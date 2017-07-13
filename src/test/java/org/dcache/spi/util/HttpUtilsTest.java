@@ -30,20 +30,17 @@ import static org.powermock.api.support.membermodification.MemberMatcher.method;
 import static org.powermock.api.support.membermodification.MemberModifier.stub;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ HttpUtils.class })
-@PowerMockIgnore({"org.apache.http.ssl.*", "javax.net.ssl.*" , "javax.crypto.*, java.security.*"})
+@PrepareForTest({HttpUtils.class})
+@PowerMockIgnore({"org.apache.http.ssl.*", "javax.net.ssl.*", "javax.crypto.*, java.security.*"})
 public class HttpUtilsTest {
-    private final String url = "https://someurl";
-
     private static String LIST_CAP_DIR = "{\"name\":[\"disk\",\"tape\"],\"message\":\"successful\",\"status\":\"200\"}";
     private static String CAP_DIR_TAPE = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"disk\",\"transition\":[\"tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"}}}";
     private static String CAP_DIR_DISK = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"tape\",\"transition\":[\"disk\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"600000\"}}}";
-
     private static String LIST_CAP_FILE = "{\"name\":[\"disk\",\"tape\",\"disk+tape\"],\"message\":\"successful\",\"status\":\"200\"}";
     private static String CAP_FILE_DISK = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"disk\",\"transition\":[\"tape\",\"disk+tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"}}}";
     private static String CAP_FILE_TAPE = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"tape\",\"transition\":[\"disk+tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"600000\"}}}";
     private static String CAP_FILE_BOTH = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"disk+tape\",\"transition\":[\"tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"2\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"}}}";
-
+    private final String url = "https://someurl";
     private JSONObject listCapDirectory = new JSONObject(LIST_CAP_DIR);
     private JSONObject capDirDisk = new JSONObject(CAP_DIR_DISK);
     private JSONObject capDirTape = new JSONObject(CAP_DIR_TAPE);
@@ -158,7 +155,7 @@ public class HttpUtilsTest {
     }
 
 
-    @Test (expected = SpiException.class)
+    @Test(expected = SpiException.class)
     public void testGetBackendCapabilitiesWithException() throws Exception {
         when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class))
                 .thenThrow(SpiException.class);
@@ -171,7 +168,7 @@ public class HttpUtilsTest {
         HttpUtils.getBackendCapabilities(url);
     }
 
-    @Test (expected = SpiException.class)
+    @Test(expected = SpiException.class)
     public void testCurrentStatusWithSpiException() throws Exception {
         when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class))
                 .thenThrow(SpiException.class);
@@ -182,9 +179,8 @@ public class HttpUtilsTest {
         HttpUtils.currentStatus(url);
     }
 
-    @Test (expected = SpiException.class)
-    public void testCurrentStatusWithIOException() throws Exception
-    {
+    @Test(expected = SpiException.class)
+    public void testCurrentStatusWithIOException() throws Exception {
         stub(method(HttpClient.class, "execute", HttpUriRequest.class)).toThrow(new IOException());
 
         when(HttpUtils.class, "currentStatus", Mockito.anyString())
@@ -195,9 +191,8 @@ public class HttpUtilsTest {
         HttpUtils.currentStatus(url);
     }
 
-    @Test (expected = SpiException.class)
-    public void testCurrentStatusWithJsonException() throws Exception
-    {
+    @Test(expected = SpiException.class)
+    public void testCurrentStatusWithJsonException() throws Exception {
         stub(method(ParseUtils.class, "responseAsJson", HttpEntity.class))
                 .toThrow(new JSONException("Error"));
 
