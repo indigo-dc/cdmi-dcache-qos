@@ -74,7 +74,8 @@ public class HttpUtils {
         response.getStatusLine().getStatusCode() == 501 ||
         response.getStatusLine().getStatusCode() == 404 ||
         response.getStatusLine().getStatusCode() == 500) {
-      throw new SpiException(ParseUtils.responseAsJson(response.getEntity()).getString("error"));
+      throw new SpiException(
+          ParseUtils.responseAsJson(response.getEntity()).getString("error"));
     }
   }
 
@@ -92,7 +93,8 @@ public class HttpUtils {
       LOG.debug("Subject credentials = {}", subject);
 
       if (subject == null && clientCreds != null) {
-        request.addHeader(scheme.authenticate(clientCreds, request, new BasicHttpContext()));
+        request
+            .addHeader(scheme.authenticate(clientCreds, request, new BasicHttpContext()));
       } else if (subject != null) {
         String bearer = (String) subject.getPrivateCredentials().stream().findFirst().get();
         if (bearer != null) {
@@ -131,12 +133,14 @@ public class HttpUtils {
       HttpGet request = new HttpGet(url + backendCapTypeTofileType(type));
       JSONObject response = execute(request);
 
-      List<String> capabilities = JsonUtils.jsonArrayToStringList(response.getJSONArray("name"));
+      List<String> capabilities = JsonUtils
+          .jsonArrayToStringList(response.getJSONArray("name"));
       for (String capability : capabilities) {
         request = new HttpGet(url + backendCapTypeTofileType(type) + "/" + capability);
         response = execute(request);
 
-        BackendCapability backendCapability = ParseUtils.backendCapabilityFromJson(response, type);
+        BackendCapability backendCapability = ParseUtils
+            .backendCapabilityFromJson(response, type);
         backendCapabilities.add(backendCapability);
       }
     } catch (JSONException | IllegalArgumentException je) {

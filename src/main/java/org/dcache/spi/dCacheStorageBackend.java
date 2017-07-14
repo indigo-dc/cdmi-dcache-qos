@@ -55,8 +55,9 @@ public class dCacheStorageBackend implements StorageBackend {
     capabilities.put("cdmi_capabilities_allowed", "true");
     capabilities.put("cdmi_latency", "true");
     exports
-        .put("Network/WebHTTP", new JSONObject().put("identifier", "https://dcache-qos-01.desy.de/")
-            .put("permissions", "oidc"));
+        .put("Network/WebHTTP",
+            new JSONObject().put("identifier", "https://dcache-qos-01.desy.de/")
+                .put("permissions", "oidc"));
   }
 
   private PluginConfig config;
@@ -81,7 +82,8 @@ public class dCacheStorageBackend implements StorageBackend {
     DCACHE_SERVER =
         scheme + config.get("dcache.server") + ":" + config.get("dcache.server.rest.endpoint")
             + "/";
-    HttpUtils.setCredentials(config.get("dcache.rest.user"), config.get("dcache.rest.password"));
+    HttpUtils
+        .setCredentials(config.get("dcache.rest.user"), config.get("dcache.rest.password"));
   }
 
   @Override
@@ -112,13 +114,15 @@ public class dCacheStorageBackend implements StorageBackend {
   JSONObject updateCdmiObjectStub(String path, String targetCapabilityUri)
       throws BackEndException {
     String url =
-        DCACHE_SERVER + apiPrefix + (isRestApiNew ? qosPrefixNew : "qos-management/" + "namespace")
+        DCACHE_SERVER + apiPrefix + (isRestApiNew ? qosPrefixNew
+            : "qos-management/" + "namespace")
             + path;
     try {
       HttpPost post = new HttpPost(url);
       post.setEntity(
-          new StringEntity(isRestApiNew ? JsonUtils.targetCapUriToJsonNew(targetCapabilityUri) :
-              JsonUtils.targetCapUriToJsonOld(targetCapabilityUri)));
+          new StringEntity(
+              isRestApiNew ? JsonUtils.targetCapUriToJsonNew(targetCapabilityUri) :
+                  JsonUtils.targetCapUriToJsonOld(targetCapabilityUri)));
       List<Header> headers = new ArrayList<>();
       headers.add(new BasicHeader("Content-Type", "application/json"));
       headers.add(new BasicHeader("Accept", "application/json"));
@@ -151,9 +155,10 @@ public class dCacheStorageBackend implements StorageBackend {
 
       String curQos = cdmi.getString((isRestApiNew) ? "currentQos" : "qos");
 
-      String currentCapUrl = HttpUtils.getCapabilityUri(DCACHE_SERVER + apiPrefix + qosPrefixOld,
-          rest.getString("fileType"),
-          curQos);
+      String currentCapUrl = HttpUtils
+          .getCapabilityUri(DCACHE_SERVER + apiPrefix + qosPrefixOld,
+              rest.getString("fileType"),
+              curQos);
 
       Map<String, Object> monAttributes = HttpUtils.monitoredAttributes(currentCapUrl);
       LOG.debug("Children {}  of Cdmi object {}", childrenJson, path);
@@ -169,13 +174,15 @@ public class dCacheStorageBackend implements StorageBackend {
       String targetCapUri = null;
       if (cdmi.has("targetQoS")) {
         targetCapUri =
-            "/cdmi_capabilities/" + ParseUtils.fileTypeToCapType(rest.getString("fileType")) + "/"
+            "/cdmi_capabilities/" + ParseUtils.fileTypeToCapType(rest.getString("fileType"))
+                + "/"
                 + cdmi.getString("targetQoS");
       }
       LOG.info("Cdmi Capability of object {} is {}; in transition to {}", path, currentCapUri,
           targetCapUri);
 
-      CdmiObjectStatus status = new CdmiObjectStatus(monAttributes, currentCapUri, targetCapUri);
+      CdmiObjectStatus status = new CdmiObjectStatus(monAttributes, currentCapUri,
+          targetCapUri);
       status.setExportAttributes(exports);
       status.setChildren(children);
       return status;

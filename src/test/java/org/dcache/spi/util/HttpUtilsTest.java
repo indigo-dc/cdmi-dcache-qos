@@ -87,13 +87,15 @@ public class HttpUtilsTest {
     assertEquals(caps.get(0).getName(), backCapDirDisk.getName());
     assertEquals(caps.get(0).getType(), backCapDirDisk.getType());
     assertEquals(caps.get(0).getCapabilities(), backCapDirDisk.getCapabilities());
-    assertEquals(((JSONArray) caps.get(0).getMetadata().get("cdmi_capabilities_allowed")).get(0),
+    assertEquals(
+        ((JSONArray) caps.get(0).getMetadata().get("cdmi_capabilities_allowed")).get(0),
         ((JSONArray) backCapDirDisk.getMetadata().get("cdmi_capabilities_allowed")).get(0));
 
     assertEquals(caps.get(1).getName(), backCapDirTape.getName());
     assertEquals(caps.get(1).getType(), backCapDirTape.getType());
     assertEquals(caps.get(1).getCapabilities(), backCapDirTape.getCapabilities());
-    assertEquals(((JSONArray) caps.get(1).getMetadata().get("cdmi_capabilities_allowed")).get(0),
+    assertEquals(
+        ((JSONArray) caps.get(1).getMetadata().get("cdmi_capabilities_allowed")).get(0),
         ((JSONArray) backCapDirTape.getMetadata().get("cdmi_capabilities_allowed")).get(0));
   }
 
@@ -133,34 +135,39 @@ public class HttpUtilsTest {
     assertEquals(caps.get(0).getName(), backCapDirDisk.getName());
     assertEquals(caps.get(0).getType(), backCapDirDisk.getType());
     assertEquals(caps.get(0).getCapabilities(), backCapDirDisk.getCapabilities());
-    assertEquals(((JSONArray) caps.get(0).getMetadata().get("cdmi_capabilities_allowed")).get(0),
+    assertEquals(
+        ((JSONArray) caps.get(0).getMetadata().get("cdmi_capabilities_allowed")).get(0),
         ((JSONArray) backCapDirDisk.getMetadata().get("cdmi_capabilities_allowed")).get(0));
 
     assertEquals(caps.get(1).getName(), backCapDirTape.getName());
     assertEquals(caps.get(1).getType(), backCapDirTape.getType());
     assertEquals(caps.get(1).getCapabilities(), backCapDirTape.getCapabilities());
-    assertEquals(((JSONArray) caps.get(1).getMetadata().get("cdmi_capabilities_allowed")).get(0),
+    assertEquals(
+        ((JSONArray) caps.get(1).getMetadata().get("cdmi_capabilities_allowed")).get(0),
         ((JSONArray) backCapDirTape.getMetadata().get("cdmi_capabilities_allowed")).get(0));
 
     assertEquals(caps.get(2).getName(), backCapFileDisk.getName());
     assertEquals(caps.get(2).getType(), backCapFileDisk.getType());
     assertEquals(caps.get(2).getCapabilities(), backCapFileDisk.getCapabilities());
-    assertEquals(((JSONArray) caps.get(2).getMetadata().get("cdmi_capabilities_allowed")).get(0),
+    assertEquals(
+        ((JSONArray) caps.get(2).getMetadata().get("cdmi_capabilities_allowed")).get(0),
         ((JSONArray) backCapFileDisk.getMetadata().get("cdmi_capabilities_allowed")).get(0));
 
     assertEquals(caps.get(3).getName(), backCapFileTape.getName());
     assertEquals(caps.get(3).getType(), backCapFileTape.getType());
     assertEquals(caps.get(3).getCapabilities(), backCapFileTape.getCapabilities());
-    assertEquals(((JSONArray) caps.get(3).getMetadata().get("cdmi_capabilities_allowed")).get(0),
+    assertEquals(
+        ((JSONArray) caps.get(3).getMetadata().get("cdmi_capabilities_allowed")).get(0),
         ((JSONArray) backCapFileTape.getMetadata().get("cdmi_capabilities_allowed")).get(0));
 
     assertEquals(caps.get(4).getName(), backCapFileDiskTape.getName());
     assertEquals(caps.get(4).getType(), backCapFileDiskTape.getType());
     assertEquals(caps.get(4).getCapabilities(), backCapFileDiskTape.getCapabilities());
-    assertEquals(((JSONArray) caps.get(4).getMetadata().get("cdmi_capabilities_allowed")).get(0),
-        ((JSONArray) backCapFileDiskTape.getMetadata().get("cdmi_capabilities_allowed")).get(0));
+    assertEquals(
+        ((JSONArray) caps.get(4).getMetadata().get("cdmi_capabilities_allowed")).get(0),
+        ((JSONArray) backCapFileDiskTape.getMetadata().get("cdmi_capabilities_allowed"))
+            .get(0));
   }
-
 
   @Test(expected = SpiException.class)
   public void testGetBackendCapabilitiesWithException() throws Exception {
