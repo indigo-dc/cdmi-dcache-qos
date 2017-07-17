@@ -31,7 +31,7 @@ fi
 git clone https://github.com/indigo-dc/cdmi-spi.git
 cd cdmi-spi
 git checkout $CDMI_SPI_COMMIT
-mvn clean install
+mvn clean install -Dgpg.skip=true
 
 
 
@@ -39,7 +39,7 @@ mvn clean install
 # compile and install cdmi-dcache-qos (as a library)
 #
 cd ..
-mvn clean install
+mvn clean install -Dmaven.test.skip=true
 
 
 
@@ -70,7 +70,7 @@ CDMI_JAR_VERSION_ERR=$?
 
 CDMI_VERSION=$(echo $CDMI_JAR_VERSION | grep -o "[0-9.]*")
 
-SERVICE_VERSION=${QOS_VERSION}-cdmi${CDMI_VERSION}
+SERVICE_VERSION=${QOS_VERSION}cdmi${CDMI_VERSION}
 
 #
 # copy cdmi server to its final name (it is cdmi server with included cdmi-dcache-qos module)
@@ -106,7 +106,9 @@ sed "s/@SERVICE_VERSION@/$SERVICE_VERSION/g" templates/rpm/SOURCES/cdmi-dcache-q
 #rpm/SPECS/cdmi-dcache-qos.spec
 sed "s/@SERVICE_VERSION@/$SERVICE_VERSION/g" templates/rpm/SPECS/cdmi-dcache-qos.spec > rpm/SPECS/cdmi-dcache-qos.spec
 rpmbuild --define "_topdir ${TOPDIR}" -ba $TOPDIR/SPECS/$NAME.spec
-cp ${TOPDIR}/RPMS/x86_64/cdmi-dcache-qos--$SERVICE_VERSION-1.el7.centos.x86_64.rpm .
+#cdmi-dcache-qos-1.0cdmi1.2-1.x86_64.rpm
+cp ${TOPDIR}/RPMS/x86_64/cdmi-dcache-qos-$SERVICE_VERSION-1.x86_64.rpm .
 
-
+rm -rf ./rpm CDMI cdmi-spi
+mvn clean
 

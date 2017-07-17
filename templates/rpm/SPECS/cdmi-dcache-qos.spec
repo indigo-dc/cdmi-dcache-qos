@@ -32,7 +32,7 @@ cp %{_topdir}/SOURCES/%{name}.service %{buildroot}/etc/systemd/system
 
 %files
 /var/lib/%{name}/config/application.yml
-/var/lib/%{name}/config/fixed-mode/*
+/var/lib/%{name}/config/dcache.properties
 /var/lib/%{name}/%{name}-%{jarversion}.jar
 /etc/systemd/system/%{name}.service
 

@@ -29,7 +29,7 @@ rm -rf cdmi-spi
 git clone https://github.com/indigo-dc/cdmi-spi.git
 cd cdmi-spi
 git checkout $CDMI_SPI_COMMIT
-mvn clean install
+mvn clean install -Dgpg.skip=true
 
 
 
@@ -38,7 +38,7 @@ mvn clean install
 # compile and install cdmi-dcache-qos (as a dependency)
 #
 cd ..
-mvn clean install
+mvn clean install -Dmaven.test.skip=true
 
 
 #
@@ -120,8 +120,8 @@ dpkg --build debian
 mv debian.deb $NAME-${SERVICE_VERSION}.deb
 
 
-
-
+rm -rf CDMI cdmi-spi debian
+mvn clean
 
 
 

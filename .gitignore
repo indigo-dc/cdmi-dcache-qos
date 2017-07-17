@@ -88,3 +88,7 @@ local.properties
 
 # Code Recommenders
 .recommenders/
+
+#Build-Artifcats
+*.deb
+*.rpm
