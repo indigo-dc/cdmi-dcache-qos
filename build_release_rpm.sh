@@ -107,7 +107,7 @@ sed "s/@SERVICE_VERSION@/$SERVICE_VERSION/g" templates/rpm/SOURCES/cdmi-dcache-q
 sed "s/@SERVICE_VERSION@/$SERVICE_VERSION/g" templates/rpm/SPECS/cdmi-dcache-qos.spec > rpm/SPECS/cdmi-dcache-qos.spec
 rpmbuild --define "_topdir ${TOPDIR}" -ba $TOPDIR/SPECS/$NAME.spec
 #cdmi-dcache-qos-1.0cdmi1.2-1.x86_64.rpm
-cp ${TOPDIR}/RPMS/x86_64/cdmi-dcache-qos-$SERVICE_VERSION-1.x86_64.rpm .
+cp ${TOPDIR}/RPMS/x86_64/cdmi-dcache-qos-$SERVICE_VERSION-1.x86_64*.rpm .
 
 rm -rf ./rpm CDMI cdmi-spi
 mvn clean
