@@ -159,7 +159,8 @@ public class HttpUtils {
     }
   }
 
-  private static String fileTypeToCapString(String type) {
+  @VisibleForTesting
+  static String fileTypeToCapString(String type) {
     switch (type) {
       case "DIR":
         return "directory";
