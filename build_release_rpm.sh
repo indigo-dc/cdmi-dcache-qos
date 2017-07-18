@@ -39,7 +39,7 @@ mvn clean install -Dgpg.skip=true
 # compile and install cdmi-dcache-qos (as a library)
 #
 cd ..
-mvn clean install -Dmaven.test.skip=true
+mvn clean install
 
 
 
