@@ -11,7 +11,13 @@ Our deployment tests have been done on CentOS7.
 
 Install
 ---------------------
+Go to <https://ci.dcache.org/job/Indigo_CDMI_QoS/>
 
+Download the rpm package from the list of artifacts and install
+
+```bash
+yum localinstall cdmi-dcache-qos-1.0cdmi1.2-1.el7.x86_64.rpm
+```
 
 Configure
 ---------------------
