@@ -121,9 +121,5 @@ mv debian.deb $NAME-${SERVICE_VERSION}.deb
 
 
 rm -rf CDMI cdmi-spi debian
-mvn clean
-
-
-
 
 

@@ -110,5 +110,4 @@ rpmbuild --define "_topdir ${TOPDIR}" -ba $TOPDIR/SPECS/$NAME.spec
 cp ${TOPDIR}/RPMS/x86_64/cdmi-dcache-qos-$SERVICE_VERSION-1.*x86_64*.rpm .
 
 rm -rf ./rpm CDMI cdmi-spi
-mvn clean
 
