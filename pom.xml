@@ -16,6 +16,17 @@
     <org.json.version>20160212</org.json.version>
     <httpclient.version>4.5.3</httpclient.version>
     <guava.version>19.0</guava.version>
+    <checkstyle.version>2.17</checkstyle.version>
+    <surefire.version>2.20</surefire.version>
+    <log4j12.version>1.7.25</log4j12.version>
+    <puppycrawl.version>8.0</puppycrawl.version>
+    <hamcrest.version>1.3</hamcrest.version>
+    <jsonpath.version>2.2.0</jsonpath.version>
+    <mockito.all.version>1.10.19</mockito.all.version>
+    <powermock.junit.version>1.7.0</powermock.junit.version>
+    <powermock.api.version>1.7.0</powermock.api.version>
+    <powermock.core.version>1.7.0</powermock.core.version>
+    <jxr.version>2.5</jxr.version>
 
     <!-- Used to locate the profile specific configuration file. -->
     <build.profile.id>dev</build.profile.id>
@@ -76,7 +87,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.17</version>
+        <version>${checkstyle.version}</version>
         <configuration>
           <configLocation>google_checks.xml</configLocation>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
@@ -97,7 +108,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
+        <version>${surefire.version}</version>
         <configuration>
           <systemPropertyVariables>
             <jacoco-agent.destfile>${project.build.directory}/jacoco.exec</jacoco-agent.destfile>
@@ -141,7 +152,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.25</version>
+      <version>${log4j12.version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
     <dependency>
@@ -152,7 +163,7 @@
     <dependency>
       <groupId>com.puppycrawl.tools</groupId>
       <artifactId>checkstyle</artifactId>
-      <version>8.0</version>
+      <version>${puppycrawl.version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
     <dependency>
@@ -163,35 +174,35 @@
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-core</artifactId>
-      <version>1.3</version>
+      <version>${hamcrest.version}</version>
     </dependency>
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path-assert</artifactId>
-      <version>2.2.0</version>
+      <version>${jsonpath.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
-      <version>1.10.19</version>
+      <version>${mockito.all.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
-      <version>1.7.0</version>
+      <version>${powermock.junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-mockito</artifactId>
-      <version>1.7.0</version>
+      <version>${powermock.api.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-core</artifactId>
-      <version>1.7.0</version>
+      <version>${powermock.core.version}</version>
       <scope>test</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
@@ -203,7 +214,7 @@
     <dependency>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-jxr-plugin</artifactId>
-      <version>2.5</version>
+      <version>${jxr.version}</version>
     </dependency>
   </dependencies>
   <reporting>
@@ -211,7 +222,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.5</version>
+        <version>${jxr.version}</version>
       </plugin>
     </plugins>
   </reporting>
