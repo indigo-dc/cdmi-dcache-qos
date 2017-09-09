@@ -7,25 +7,31 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.dcache.spi.dCacheStorageBackend;
+import org.dcache.spi.DcacheStorageBackend;
 import org.indigo.cdmi.BackendCapability;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ParseUtilsTest {
 
-  private static final HashMap<String, Object> capabilities = dCacheStorageBackend.capabilities;
-  private static final HashMap<String, Object> exports = dCacheStorageBackend.exports;
-  private static String CAP_DISK_TAPE = "{\"backendCapability\":{\"metadata\":{\"cdmi_data_redundancy_provided\":\"2\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"},\"name\":\"disk+tape\",\"transition\":[\"tape\"]}}";
-  private static String CAP_DISK = "{\"backendCapability\":{\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"},\"name\":\"disk\",\"transition\":[\"tape\",\"disk+tape\"]}}";
+  private static final HashMap<String, Object> capabilities = DcacheStorageBackend.capabilities;
+
+  private static String CAP_DISK_TAPE =
+      "{\"backendCapability\":{\"metadata\":{\"cdmi_data_redundancy_provided\":\"2\","
+      + "\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"},"
+      + "\"name\":\"disk+tape\",\"transition\":[\"tape\"]}}";
+  private static String CAP_DISK =
+      "{\"backendCapability\":{\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\","
+      + "\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"},"
+      + "\"name\":\"disk\",\"transition\":[\"tape\",\"disk+tape\"]}}";
 
   @Before
-  public void setUp() throws Exception {
-  }
+  public void setUp() throws Exception {}
 
   @Test
   public void testBackendCapabilityDiskAndTapeFromJson() throws Exception {
@@ -39,15 +45,16 @@ public class ParseUtilsTest {
     assertEquals(capability.getType(), DATAOBJECT);
     assertEquals(capability.getName(), "disk+tape");
     assertEquals(capability.getCapabilities(), capabilities);
-    assertEquals(capability.getMetadata().get("cdmi_data_redundancy"),
+    assertEquals(
+        capability.getMetadata().get("cdmi_data_redundancy"),
         json.getJSONObject("backendCapability")
             .getJSONObject("metadata")
             .getInt("cdmi_data_redundancy_provided"));
-    assertEquals(capability.getMetadata().get("cdmi_geographic_placement"),
+    assertEquals(
+        capability.getMetadata().get("cdmi_geographic_placement"),
         json.getJSONObject("backendCapability")
             .getJSONObject("metadata")
-            .getJSONArray(
-                "cdmi_geographic_placement_provided"));
+            .getJSONArray("cdmi_geographic_placement_provided"));
   }
 
   @Test
@@ -61,15 +68,16 @@ public class ParseUtilsTest {
     assertEquals(capability.getType(), DATAOBJECT);
     assertEquals(capability.getName(), "disk");
     assertEquals(capability.getCapabilities(), capabilities);
-    assertEquals(capability.getMetadata().get("cdmi_data_redundancy"),
+    assertEquals(
+        capability.getMetadata().get("cdmi_data_redundancy"),
         json.getJSONObject("backendCapability")
             .getJSONObject("metadata")
             .getInt("cdmi_data_redundancy_provided"));
-    assertEquals(capability.getMetadata().get("cdmi_geographic_placement"),
+    assertEquals(
+        capability.getMetadata().get("cdmi_geographic_placement"),
         json.getJSONObject("backendCapability")
             .getJSONObject("metadata")
-            .getJSONArray(
-                "cdmi_geographic_placement_provided"));
+            .getJSONArray("cdmi_geographic_placement_provided"));
   }
 
   @Test

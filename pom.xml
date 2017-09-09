@@ -27,6 +27,7 @@
     <powermock.api.version>1.7.0</powermock.api.version>
     <powermock.core.version>1.7.0</powermock.core.version>
     <jxr.version>2.5</jxr.version>
+    <code.style.version>1.4</code.style.version>
 
     <!-- Used to locate the profile specific configuration file. -->
     <build.profile.id>dev</build.profile.id>
@@ -170,6 +171,11 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.googlejavaformat</groupId>
+      <artifactId>google-java-format</artifactId>
+      <version>${code.style.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>

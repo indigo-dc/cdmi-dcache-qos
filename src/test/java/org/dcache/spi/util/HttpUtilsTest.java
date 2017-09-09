@@ -9,10 +9,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import static org.powermock.api.support.membermodification.MemberMatcher.method;
 import static org.powermock.api.support.membermodification.MemberModifier.stub;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseFactory;
@@ -37,18 +33,42 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({HttpUtils.class})
 @PowerMockIgnore({"org.apache.http.ssl.*", "javax.net.ssl.*", "javax.crypto.*, java.security.*"})
 public class HttpUtilsTest {
 
-  private static String LIST_CAP_DIR = "{\"name\":[\"disk\",\"tape\"],\"message\":\"successful\",\"status\":\"200\"}";
-  private static String CAP_DIR_TAPE = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"disk\",\"transition\":[\"tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"}}}";
-  private static String CAP_DIR_DISK = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"tape\",\"transition\":[\"disk\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"600000\"}}}";
-  private static String LIST_CAP_FILE = "{\"name\":[\"disk\",\"tape\",\"disk+tape\"],\"message\":\"successful\",\"status\":\"200\"}";
-  private static String CAP_FILE_DISK = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"disk\",\"transition\":[\"tape\",\"disk+tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"}}}";
-  private static String CAP_FILE_TAPE = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"tape\",\"transition\":[\"disk+tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"600000\"}}}";
-  private static String CAP_FILE_BOTH = "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"disk+tape\",\"transition\":[\"tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"2\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"}}}";
+  private static String LIST_CAP_DIR =
+      "{\"name\":[\"disk\",\"tape\"],\"message\":\"successful\",\"status\":\"200\"}";
+  private static String CAP_DIR_TAPE =
+      "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"disk\","
+      + "\"transition\":[\"tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\","
+      + "\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"100\"}}}";
+  private static String CAP_DIR_DISK =
+      "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"tape\","
+      + "\"transition\":[\"disk\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\","
+      + "\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"600000\"}}}";
+  private static String LIST_CAP_FILE =
+      "{\"name\":[\"disk\",\"tape\",\"disk+tape\"],\"message\":\"successful\",\"status\":\"200\"}";
+  private static String CAP_FILE_DISK =
+      "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"disk\","
+      + "\"transition\":[\"tape\",\"disk+tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":"
+      + "\"1\",\"cdmi_geographic_placement_provided\":[\"DE\"],"
+      + "\"cdmi_latency_provided\":\"100\"}}}";
+  private static String CAP_FILE_TAPE =
+      "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":\"tape\","
+      + "\"transition\":[\"disk+tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":\"1\","
+      + "\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":\"600000\"}}}";
+  private static String CAP_FILE_BOTH =
+      "{\"status\":\"200\",\"message\":\"successful\",\"backendCapability\":{\"name\":"
+      + "\"disk+tape\",\"transition\":[\"tape\"],\"metadata\":{\"cdmi_data_redundancy_provided\":"
+      + "\"2\",\"cdmi_geographic_placement_provided\":[\"DE\"],\"cdmi_latency_provided\":"
+      + "\"100\"}}}";
   private static String RESPONSE_STATUS_ERROR = "{\"error\":\"Error\"}";
   private final String url = "https://someurl";
 
@@ -61,19 +81,18 @@ public class HttpUtilsTest {
   private JSONObject capFileTape = new JSONObject(CAP_FILE_TAPE);
   private JSONObject capFileDiskAndTape = new JSONObject(CAP_FILE_BOTH);
 
-  private BackendCapability backCapDirDisk = ParseUtils
-      .backendCapabilityFromJson(capDirDisk, CONTAINER);
-  private BackendCapability backCapDirTape = ParseUtils
-      .backendCapabilityFromJson(capDirTape, CONTAINER);
-  private BackendCapability backCapFileDisk = ParseUtils
-      .backendCapabilityFromJson(capFileDisk, DATAOBJECT);
-  private BackendCapability backCapFileTape = ParseUtils
-      .backendCapabilityFromJson(capFileTape, DATAOBJECT);
-  private BackendCapability backCapFileDiskTape = ParseUtils
-      .backendCapabilityFromJson(capFileDiskAndTape,
-          DATAOBJECT);
+  private BackendCapability backCapDirDisk =
+      ParseUtils.backendCapabilityFromJson(capDirDisk, CONTAINER);
+  private BackendCapability backCapDirTape =
+      ParseUtils.backendCapabilityFromJson(capDirTape, CONTAINER);
+  private BackendCapability backCapFileDisk =
+      ParseUtils.backendCapabilityFromJson(capFileDisk, DATAOBJECT);
+  private BackendCapability backCapFileTape =
+      ParseUtils.backendCapabilityFromJson(capFileTape, DATAOBJECT);
+  private BackendCapability backCapFileDiskTape =
+      ParseUtils.backendCapabilityFromJson(capFileDiskAndTape, DATAOBJECT);
 
-  private Map<String, Object> monitoredAttributes = ParseUtils.metadataFromJson(capDirDisk);
+  //private Map<String, Object> monitoredAttributes = ParseUtils.metadataFromJson(capDirDisk);
 
   @Before
   public void setUp() throws Exception {
@@ -89,8 +108,12 @@ public class HttpUtilsTest {
         .thenReturn(capDirDisk)
         .thenReturn(capDirTape);
 
-    when(HttpUtils.class, "addBackendCapability", Mockito.anyString(), Mockito.anyList(),
-        Mockito.any())
+    when(
+            HttpUtils.class,
+            "addBackendCapability",
+            Mockito.anyString(),
+            Mockito.anyList(),
+            Mockito.any())
         .thenCallRealMethod();
 
     HttpUtils.addBackendCapability(url, caps, CONTAINER);
@@ -119,8 +142,12 @@ public class HttpUtilsTest {
     when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class))
         .thenThrow(SpiException.class);
 
-    when(HttpUtils.class, "addBackendCapability", Mockito.anyString(), Mockito.anyList(),
-        Mockito.any())
+    when(
+            HttpUtils.class,
+            "addBackendCapability",
+            Mockito.anyString(),
+            Mockito.anyList(),
+            Mockito.any())
         .thenCallRealMethod();
     HttpUtils.addBackendCapability(url, caps, CONTAINER);
   }
@@ -136,8 +163,12 @@ public class HttpUtilsTest {
         .thenReturn(capFileTape)
         .thenReturn(capFileDiskAndTape);
 
-    when(HttpUtils.class, "addBackendCapability", Mockito.anyString(), Mockito.anyList(),
-        Mockito.any())
+    when(
+            HttpUtils.class,
+            "addBackendCapability",
+            Mockito.anyString(),
+            Mockito.anyList(),
+            Mockito.any())
         .thenCallRealMethod();
 
     when(HttpUtils.class, "getBackendCapabilities", Mockito.anyString()).thenCallRealMethod();
@@ -178,8 +209,7 @@ public class HttpUtilsTest {
     assertEquals(caps.get(4).getCapabilities(), backCapFileDiskTape.getCapabilities());
     assertEquals(
         ((JSONArray) caps.get(4).getMetadata().get("cdmi_capabilities_allowed")).get(0),
-        ((JSONArray) backCapFileDiskTape.getMetadata().get("cdmi_capabilities_allowed"))
-            .get(0));
+        ((JSONArray) backCapFileDiskTape.getMetadata().get("cdmi_capabilities_allowed")).get(0));
   }
 
   @Test(expected = SpiException.class)
@@ -187,8 +217,12 @@ public class HttpUtilsTest {
     when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class))
         .thenThrow(SpiException.class);
 
-    when(HttpUtils.class, "addBackendCapability", Mockito.anyString(), Mockito.anyList(),
-        Mockito.any())
+    when(
+            HttpUtils.class,
+            "addBackendCapability",
+            Mockito.anyString(),
+            Mockito.anyList(),
+            Mockito.any())
         .thenCallRealMethod();
 
     when(HttpUtils.class, "getBackendCapabilities", Mockito.anyString())
@@ -202,20 +236,17 @@ public class HttpUtilsTest {
     when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class))
         .thenThrow(SpiException.class);
 
-    when(HttpUtils.class, "currentStatus", Mockito.anyString())
-        .thenCallRealMethod();
+    when(HttpUtils.class, "currentStatus", Mockito.anyString()).thenCallRealMethod();
 
     HttpUtils.currentStatus(url);
   }
 
   @Test(expected = SpiException.class)
-  public void testCurrentStatusWithIOException() throws Exception {
+  public void testCurrentStatusWithIoException() throws Exception {
     stub(method(HttpClient.class, "execute", HttpUriRequest.class)).toThrow(new IOException());
 
-    when(HttpUtils.class, "currentStatus", Mockito.anyString())
-        .thenCallRealMethod();
-    when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class))
-        .thenCallRealMethod();
+    when(HttpUtils.class, "currentStatus", Mockito.anyString()).thenCallRealMethod();
+    when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class)).thenCallRealMethod();
 
     HttpUtils.currentStatus(url);
   }
@@ -226,18 +257,15 @@ public class HttpUtilsTest {
         .toThrow(new JSONException("Error"));
 
     stub(method(HttpClient.class, "execute", HttpUriRequest.class)).toThrow(new IOException());
-    when(HttpUtils.class, "currentStatus", Mockito.anyString())
-        .thenCallRealMethod();
-    when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class))
-        .thenCallRealMethod();
+    when(HttpUtils.class, "currentStatus", Mockito.anyString()).thenCallRealMethod();
+    when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class)).thenCallRealMethod();
 
     HttpUtils.currentStatus(url);
   }
 
   @Test
   public void testFileTypeToCapString() throws Exception {
-    when(HttpUtils.class, "fileTypeToCapString", Mockito.anyString())
-        .thenCallRealMethod();
+    when(HttpUtils.class, "fileTypeToCapString", Mockito.anyString()).thenCallRealMethod();
 
     assertEquals(HttpUtils.fileTypeToCapString("DIR"), "directory");
     assertEquals(HttpUtils.fileTypeToCapString("REGULAR"), "file");
@@ -255,11 +283,14 @@ public class HttpUtilsTest {
 
   @Test
   public void testGetCapabilityUri() throws Exception {
-    when(HttpUtils.class, "fileTypeToCapString", Mockito.anyString())
-        .thenCallRealMethod();
+    when(HttpUtils.class, "fileTypeToCapString", Mockito.anyString()).thenCallRealMethod();
 
-    when(HttpUtils.class, "getCapabilityUri", Mockito.anyString(), Mockito.anyString(),
-        Mockito.anyString())
+    when(
+            HttpUtils.class,
+            "getCapabilityUri",
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyString())
         .thenCallRealMethod();
 
     assertEquals(
@@ -271,11 +302,11 @@ public class HttpUtilsTest {
   public void testCheckStatusUnauthorized() throws Exception {
     HttpResponseFactory factory = new DefaultHttpResponseFactory();
 
-    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class))
-        .thenCallRealMethod();
+    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class)).thenCallRealMethod();
 
-    HttpResponse response = factory.newHttpResponse(
-        new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_UNAUTHORIZED, null), null);
+    HttpResponse response =
+        factory.newHttpResponse(
+            new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_UNAUTHORIZED, null), null);
     response.setEntity(new StringEntity(RESPONSE_STATUS_ERROR));
     HttpUtils.checkStatusError(response);
   }
@@ -284,12 +315,11 @@ public class HttpUtilsTest {
   public void testCheckStatusBadRequest() throws Exception {
     HttpResponseFactory factory = new DefaultHttpResponseFactory();
 
-    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class))
-        .thenCallRealMethod();
+    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class)).thenCallRealMethod();
 
-    HttpResponse response = factory
-        .newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_BAD_REQUEST, null),
-            null);
+    HttpResponse response =
+        factory.newHttpResponse(
+            new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_BAD_REQUEST, null), null);
     response.setEntity(new StringEntity(RESPONSE_STATUS_ERROR));
     HttpUtils.checkStatusError(response);
   }
@@ -298,12 +328,11 @@ public class HttpUtilsTest {
   public void testCheckStatusNotFound() throws Exception {
     HttpResponseFactory factory = new DefaultHttpResponseFactory();
 
-    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class))
-        .thenCallRealMethod();
+    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class)).thenCallRealMethod();
 
-    HttpResponse response = factory
-        .newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_NOT_FOUND, null),
-            null);
+    HttpResponse response =
+        factory.newHttpResponse(
+            new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_NOT_FOUND, null), null);
     response.setEntity(new StringEntity(RESPONSE_STATUS_ERROR));
     HttpUtils.checkStatusError(response);
   }
@@ -312,11 +341,12 @@ public class HttpUtilsTest {
   public void testCheckStatusServerError() throws Exception {
     HttpResponseFactory factory = new DefaultHttpResponseFactory();
 
-    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class))
-        .thenCallRealMethod();
+    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class)).thenCallRealMethod();
 
-    HttpResponse response = factory.newHttpResponse(
-        new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_INTERNAL_SERVER_ERROR, null), null);
+    HttpResponse response =
+        factory.newHttpResponse(
+            new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_INTERNAL_SERVER_ERROR, null),
+            null);
     response.setEntity(new StringEntity(RESPONSE_STATUS_ERROR));
     HttpUtils.checkStatusError(response);
   }
@@ -325,22 +355,20 @@ public class HttpUtilsTest {
   public void testCheckStatusNotImplemented() throws Exception {
     HttpResponseFactory factory = new DefaultHttpResponseFactory();
 
-    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class))
-        .thenCallRealMethod();
+    when(HttpUtils.class, "checkStatusError", Mockito.any(HttpResponse.class)).thenCallRealMethod();
 
-    HttpResponse response = factory.newHttpResponse(
-        new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_NOT_IMPLEMENTED, null), null);
+    HttpResponse response =
+        factory.newHttpResponse(
+            new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_NOT_IMPLEMENTED, null), null);
     response.setEntity(new StringEntity(RESPONSE_STATUS_ERROR));
     HttpUtils.checkStatusError(response);
   }
 
   @Test
   public void testMonitoredAttributes() throws Exception {
-    when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class))
-        .thenReturn(capDirDisk);
+    when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class)).thenReturn(capDirDisk);
 
-    when(HttpUtils.class, "monitoredAttributes", Mockito.anyString())
-        .thenCallRealMethod();
+    when(HttpUtils.class, "monitoredAttributes", Mockito.anyString()).thenCallRealMethod();
 
     Map<String, Object> attributes = HttpUtils.monitoredAttributes(url);
 
@@ -355,8 +383,7 @@ public class HttpUtilsTest {
     when(HttpUtils.class, "execute", Mockito.any(HttpUriRequest.class))
         .thenThrow(SpiException.class);
 
-    when(HttpUtils.class, "monitoredAttributes", Mockito.anyString())
-        .thenCallRealMethod();
+    when(HttpUtils.class, "monitoredAttributes", Mockito.anyString()).thenCallRealMethod();
 
     HttpUtils.monitoredAttributes(url);
   }

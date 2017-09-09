@@ -1,6 +1,15 @@
 package org.dcache.spi.util;
 
-import static org.indigo.cdmi.BackendCapability.CapabilityType;
+import org.apache.commons.codec.Charsets;
+import org.apache.http.HttpEntity;
+import org.dcache.spi.DcacheStorageBackend;
+import org.indigo.cdmi.BackendCapability;
+import org.indigo.cdmi.BackendCapability.CapabilityType;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,16 +18,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import org.apache.commons.codec.Charsets;
-import org.apache.http.HttpEntity;
-import org.dcache.spi.dCacheStorageBackend;
-import org.indigo.cdmi.BackendCapability;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ParseUtils {
 
@@ -43,28 +42,25 @@ public class ParseUtils {
     Map<String, Object> metadata = new HashMap<>();
     JSONObject backendCap = (JSONObject) obj.get("backendCapability");
 
-    String name = backendCap.getString("name");
     JSONObject meta = backendCap.getJSONObject("metadata");
-
     String cdmiRedundancy = meta.getString("cdmi_data_redundancy_provided");
-
     JSONArray cdmiGeoP = meta.getJSONArray("cdmi_geographic_placement_provided");
-
     String cdmiLatency = meta.getString("cdmi_latency_provided");
 
     metadata.put("cdmi_data_redundancy", Integer.parseInt(cdmiRedundancy));
     metadata.put("cdmi_geographic_placement", cdmiGeoP);
     metadata.put("cdmi_latency", Long.parseLong(cdmiLatency));
     try {
-      List<String> transition = JsonUtils
-          .jsonArrayToStringList(backendCap.getJSONArray("transition"));
+      List<String> transition =
+          JsonUtils.jsonArrayToStringList(backendCap.getJSONArray("transition"));
       metadata.put("cdmi_capabilities_allowed", capabiliesAllowed(transition, type));
-    } catch (JSONException je) {
+    } catch (JSONException ignore) {
+      // do nothing
     }
 
-    BackendCapability capability = new BackendCapability(name, type);
+    BackendCapability capability = new BackendCapability(backendCap.getString("name"), type);
     capability.setMetadata(metadata);
-    capability.setCapabilities(dCacheStorageBackend.capabilities);
+    capability.setCapabilities(DcacheStorageBackend.capabilities);
     return capability;
   }
 
@@ -87,14 +83,14 @@ public class ParseUtils {
 
   public static List<String> extractChildren(JSONObject json) {
     try {
-      JSONArray _children = json.getJSONArray("children");
-      List<String> children = new ArrayList<>(_children.length());
-      if (_children.length() > 0) {
+      JSONArray array = json.getJSONArray("children");
+      List<String> children = new ArrayList<>(array.length());
+      if (array.length() > 0) {
         LOG.debug("Children -> ");
-        for (int i = 0; i < _children.length(); i++) {
-          JSONObject child = (JSONObject) _children.get(i);
+        for (int i = 0; i < array.length(); i++) {
+          JSONObject child = (JSONObject) array.get(i);
           LOG.debug("\tFound Children {}", child.get("fileName"));
-          children.add(((JSONObject) _children.get(i)).getString("fileName"));
+          children.add(((JSONObject) array.get(i)).getString("fileName"));
         }
       }
       return children;
@@ -102,12 +98,6 @@ public class ParseUtils {
       LOG.debug("could not put childrenIntoMonitor {}", json);
       return Collections.emptyList();
     }
-  }
-
-  private static String listToGeoString(List<String> cdmiGeoPlacement) {
-    String result = cdmiGeoPlacement.stream().map((g) -> "\"" + g + "\"")
-        .collect(Collectors.joining(", "));
-    return "[ " + result + "]";
   }
 
   private static JSONArray capabiliesAllowed(List<String> allowed, CapabilityType type) {

@@ -1,12 +1,13 @@
 package org.dcache.spi.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PluginConfig {
 
@@ -18,8 +19,8 @@ public class PluginConfig {
     String dcacheProperties = "dcache.properties";
 
     // From class Path
-    InputStream configInputStream = getClass().getClassLoader()
-        .getResourceAsStream(dcacheProperties);
+    InputStream configInputStream =
+        getClass().getClassLoader().getResourceAsStream(dcacheProperties);
     if (configInputStream == null) {
       throw new RuntimeException("Failed to find config file");
     }
@@ -56,6 +57,7 @@ public class PluginConfig {
           configFis.close();
         }
       } catch (IOException e) {
+        // do nothing
       }
     }
   }

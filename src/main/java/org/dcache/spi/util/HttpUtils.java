@@ -5,12 +5,7 @@ import static org.indigo.cdmi.BackendCapability.CapabilityType.DATAOBJECT;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
-import java.io.IOException;
-import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.security.auth.Subject;
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthenticationException;
@@ -30,10 +25,16 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.security.AccessController;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.security.auth.Subject;
+
 public class HttpUtils {
 
-  @VisibleForTesting
-  static final HttpClient client = HttpClientBuilder.create().build();
+  @VisibleForTesting static final HttpClient client = HttpClientBuilder.create().build();
   private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
   private static BasicScheme scheme = new BasicScheme(Charsets.UTF_8);
   private static UsernamePasswordCredentials clientCreds;
@@ -50,17 +51,14 @@ public class HttpUtils {
     return HttpUtils.execute(request);
   }
 
-  public static Map<String, Object> monitoredAttributes(String capabilityUri)
-      throws SpiException {
+  public static Map<String, Object> monitoredAttributes(String capabilityUri) throws SpiException {
     HttpGet dirRequest = new HttpGet(capabilityUri);
     return ParseUtils.metadataFromJson(HttpUtils.execute(dirRequest));
   }
 
-  public static String getCapabilityUri(String capabilityUriPrefix, String fileType,
-      String curQos) {
-    return capabilityUriPrefix +
-        fileTypeToCapString(fileType) + "/" +
-        curQos;
+  public static String getCapabilityUri(
+      String capabilityUriPrefix, String fileType, String curQos) {
+    return capabilityUriPrefix + fileTypeToCapString(fileType) + "/" + curQos;
   }
 
   public static boolean statusOk(HttpResponse response) {
@@ -69,13 +67,12 @@ public class HttpUtils {
   }
 
   public static void checkStatusError(HttpResponse response) throws SpiException, IOException {
-    if (response.getStatusLine().getStatusCode() == 401 ||
-        response.getStatusLine().getStatusCode() == 400 ||
-        response.getStatusLine().getStatusCode() == 501 ||
-        response.getStatusLine().getStatusCode() == 404 ||
-        response.getStatusLine().getStatusCode() == 500) {
-      throw new SpiException(
-          ParseUtils.responseAsJson(response.getEntity()).getString("error"));
+    if (response.getStatusLine().getStatusCode() == 401
+        || response.getStatusLine().getStatusCode() == 400
+        || response.getStatusLine().getStatusCode() == 501
+        || response.getStatusLine().getStatusCode() == 404
+        || response.getStatusLine().getStatusCode() == 500) {
+      throw new SpiException(ParseUtils.responseAsJson(response.getEntity()).getString("error"));
     }
   }
 
@@ -93,8 +90,7 @@ public class HttpUtils {
       LOG.debug("Subject credentials = {}", subject);
 
       if (subject == null && clientCreds != null) {
-        request
-            .addHeader(scheme.authenticate(clientCreds, request, new BasicHttpContext()));
+        request.addHeader(scheme.authenticate(clientCreds, request, new BasicHttpContext()));
       } else if (subject != null) {
         String bearer = (String) subject.getPrivateCredentials().stream().findFirst().get();
         if (bearer != null) {
@@ -108,7 +104,8 @@ public class HttpUtils {
       if (statusOk(httpResponse)) {
         return ParseUtils.responseAsJson(httpResponse.getEntity());
       } else {
-        LOG.warn("{} {} {}: {} ",
+        LOG.warn(
+            "{} {} {}: {} ",
             request.getMethod(),
             request.getURI(),
             httpResponse.getStatusLine().getStatusCode(),
@@ -126,21 +123,19 @@ public class HttpUtils {
   }
 
   @VisibleForTesting
-  static void addBackendCapability(String url,
-      List<BackendCapability> backendCapabilities,
-      CapabilityType type) throws SpiException {
+  static void addBackendCapability(
+      String url, List<BackendCapability> backendCapabilities, CapabilityType type)
+      throws SpiException {
     try {
       HttpGet request = new HttpGet(url + backendCapTypeTofileType(type));
       JSONObject response = execute(request);
 
-      List<String> capabilities = JsonUtils
-          .jsonArrayToStringList(response.getJSONArray("name"));
+      List<String> capabilities = JsonUtils.jsonArrayToStringList(response.getJSONArray("name"));
       for (String capability : capabilities) {
         request = new HttpGet(url + backendCapTypeTofileType(type) + "/" + capability);
         response = execute(request);
 
-        BackendCapability backendCapability = ParseUtils
-            .backendCapabilityFromJson(response, type);
+        BackendCapability backendCapability = ParseUtils.backendCapabilityFromJson(response, type);
         backendCapabilities.add(backendCapability);
       }
     } catch (JSONException | IllegalArgumentException je) {
